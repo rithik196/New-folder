@@ -1,0 +1,53 @@
+[
+    {
+      "Currency pair": "EUR-INR",
+      "Buy rate (₹)": 87.65,
+      "Sell rate (₹)": 91.25
+    },
+    {
+      "Currency pair": "USD-INR",
+      "Buy rate (₹)": 83.50,
+      "Sell rate (₹)": 86.75
+    },
+    {
+      "Currency pair": "GBP-INR",
+      "Buy rate (₹)": 105.30,
+      "Sell rate (₹)": 108.90
+    },
+    {
+      "Currency pair": "JPY-INR",
+      "Buy rate (₹)": 0.62,
+      "Sell rate (₹)": 0.65
+    },
+    {
+      "Currency pair": "AUD-INR",
+      "Buy rate (₹)": 55.80,
+      "Sell rate (₹)": 58.20
+    },
+    {
+      "Currency pair": "CAD-INR",
+      "Buy rate (₹)": 61.75,
+      "Sell rate (₹)": 64.50
+    },
+    {
+      "Currency pair": "CNY-INR",
+      "Buy rate (₹)": 11.45,
+      "Sell rate (₹)": 12.10
+    },
+    {
+      "Currency pair": "SGD-INR",
+      "Buy rate (₹)": 61.25,
+      "Sell rate (₹)": 63.80
+    },
+    {
+      "Currency pair": "CHF-INR",
+      "Buy rate (₹)": 92.10,
+      "Sell rate (₹)": 95.30
+    },
+    {
+      "Currency pair": "NZD-INR",
+      "Buy rate (₹)": 50.25,
+      "Sell rate (₹)": 52.75
+    }
+  ]
+  

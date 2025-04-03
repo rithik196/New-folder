@@ -1,0 +1,33 @@
+{
+    "companyName": "Abhijeet Partnership Brothers Ltd.!",
+    "customerID": 1273621,
+    "branchCode": 4562,
+    "role": "Maker",
+  
+  
+
+  
+    "transactions": [
+      { "label": "Drafts", "count": 39 },
+      { "label": "Pending at Maker", "count": 12 },
+      { "label": "Pending at Checker", "count": 27 },
+      { "label": "Pending at Bank", "count": 46 },
+      { "label": "Completed", "count": 11 },
+      { "label": "Discarded by Bank", "count": 5 },
+      { "label": "Portal Actionable", "count": 2 }
+    ],
+    "colors": [
+      "#D0B49F", "#DBDBDE", "#FFE5AD", "#C2D8EF", "#CAE7D0", "#F4D8CF", "#AADEFE"
+    ]
+
+    ,
+      "actionableItems": [
+        { "count": 39, "label": "DRAFTS", "color": "text-[#83532E]" },
+        { "count": 12, "label": "PENDING AT MAKER", "color": "text-[#7D7D7D]" },
+        { "count": 2, "label": "PORTAL ACTIONABLE", "color": "text-[#39769C]" }
+      ]
+
+      
+    }
+    
+  

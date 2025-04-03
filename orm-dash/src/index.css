@@ -1,0 +1,23 @@
+@import "tailwindcss";
+
+.css-12w9als {
+    overflow: visible !important;
+    text-overflow: unset !important;
+    white-space: normal !important;
+}
+
+.apexcharts-datalabel-label {
+    white-space: pre-line; /* Allows breaking into multiple lines */
+    font-size: 11px !important;
+  }
+  
+  .apexcharts-datalabel-value {
+    font-size: 18px !important;
+    font-weight: bold;
+  }
+  
+
+  body {
+    font-family: "Inter", sans-serif;
+  }
+  

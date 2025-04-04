@@ -10,6 +10,7 @@ import Reports from "./pages/Reports";
 import History from "./pages/History";
 import Drafts from "./pages/Drafts";
 import PageLayout from './components/TradeAdvImpPage/PageLayout'
+import SuccessPage from "./components/TradeAdvImpPage/Forms/Success"
 
 const PrivateRoute = ({ element }) => {
   const isAuthenticated = localStorage.getItem("isAuthenticated") === "true";
@@ -24,8 +25,10 @@ function App() {
         <Routes>
           {/* Default route opens the Login Page */}
           <Route path="/" element={<LoginModal />} />
+          <Route path="/success" element={<SuccessPage />} />
           {/* Protect dashboard & other routes */}
           <Route path="/dashboard" element={<PrivateRoute element={<Layout />} />}>
+          
             <Route index element={<Dashboard />} />
             
             <Route path="trade-advance-imports" element={<PageLayout />} /> {/* NEW PAGE */}
@@ -33,7 +36,7 @@ function App() {
             <Route path="reports" element={<Reports />} />
             <Route path="history" element={<History />} />
             <Route path="drafts" element={<Drafts />} />
-          
+           
           </Route>
         </Routes>
       </Router>

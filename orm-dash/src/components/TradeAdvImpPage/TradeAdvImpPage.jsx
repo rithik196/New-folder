@@ -1,7 +1,7 @@
 import * as React from "react";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
-// import Box from "@mui/material/Box";
+
 import Footer from "./Footer";
 import BasicDetails from "./Forms/BasicDetails";
 import TransactionDetails from "./Forms/TransactionDetails";
@@ -9,6 +9,9 @@ import BeneficiaryDetails from "./Forms/BeneficiaryDetails";
 import Grid from "@mui/material/Grid2";
 import InvoiceDetails from "./Forms/InvoiveDetails"
 import Attachments from "./Forms/Attachments"
+import ShipmentDetails from "./Forms/ShipmentDetails"
+import Declaration from "./Forms/Declaration"
+import DealDetails from "./Forms/DealDetails"
 
 export default function VerticalTabs() {
   const [value, setValue] = React.useState(0);
@@ -54,7 +57,10 @@ export default function VerticalTabs() {
         {value === 1 && <TransactionDetails />}
         {value === 2 && <BeneficiaryDetails />}
         {value === 3 && <InvoiceDetails/>}
+        {value === 4 && <ShipmentDetails/>}
         {value === 5 && <Attachments/>}
+        {value === 6 && <Declaration/>}
+        {value === 7 && <DealDetails/>}
         
       </Grid>
 

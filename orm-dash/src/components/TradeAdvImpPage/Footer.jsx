@@ -9,12 +9,17 @@ const Footer = ({ value, setValue, formData }) => {
   const navigate = useNavigate();
 
   const handleSaveAndExit = () => {
-    dispatch(saveFormData(formData)); // Save form data to Redux store
-    navigate("/dashboard"); // Redirect to Dashboard
+    dispatch(saveFormData(formData));
+    navigate("/dashboard");
   };
 
   const handleNext = () => {
-    if (value < 7) setValue(value + 1);
+    if (value < 7) {
+      setValue(value + 1);
+    } else {
+      dispatch(saveFormData(formData));
+      navigate("/success");
+    }
   };
 
   const handlePrevious = () => {
@@ -33,31 +38,33 @@ const Footer = ({ value, setValue, formData }) => {
         borderTopRightRadius: "20px",
       }}
     >
-      {/* Save and Exit Button (Left Side) */}
       <Button
         variant="outlined"
         onClick={handleSaveAndExit}
-        sx={{ borderColor: "#9B1E26", color: "#9B1E26" ,borderRadius:"32px" }}
+        sx={{ borderColor: "#9B1E26", color: "#9B1E26", borderRadius: "32px" }}
       >
         Save and Exit
       </Button>
 
-      {/* Navigation Buttons (Right Side) */}
       <Box sx={{ display: "flex", gap: "10px" }}>
         <Button
           variant="outlined"
           disabled={value === 0}
           onClick={handlePrevious}
-          sx={{ borderColor: "#9B1E26", color: "#9B1E26",borderRadius:"32px"  }}
+          sx={{ borderColor: "#9B1E26", color: "#9B1E26", borderRadius: "32px" }}
         >
           Previous
         </Button>
         <Button
           variant="contained"
           onClick={handleNext}
-          sx={{ backgroundColor: "#9B1E26",borderRadius:"32px", "&:hover": { backgroundColor: "#9B1E26",borderRadius:"32px"  } }}
+          sx={{ 
+            backgroundColor: "#9B1E26",
+            borderRadius: "32px",
+            "&:hover": { backgroundColor: "#9B1E26" }
+          }}
         >
-          Save and Next
+          {value === 7 ? "Confirm and Submit" : "Save and Next"}
         </Button>
       </Box>
     </Box>

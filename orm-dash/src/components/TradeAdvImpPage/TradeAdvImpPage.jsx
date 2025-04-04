@@ -26,7 +26,7 @@ export default function VerticalTabs() {
 <Grid container spacing={2} sx={{ height: "80vh" }}>
   {/* Main Layout */}
     {/* Sidebar */}
-    <Grid size={{xs:12,md:3}} sx={{ backgroundColor: "#efefef", paddingTop: "8px", borderTop: "1px dotted rgb(219, 219, 219)" }}>
+    <Grid size={{xs:12,md:2.5}} sx={{ backgroundColor: "#efefef", paddingTop: "8px", borderTop: "1px dotted rgb(219, 219, 219)" }}>
       <Tabs
         orientation="vertical"
         variant="scrollable"
@@ -50,7 +50,7 @@ export default function VerticalTabs() {
     </Grid>
 
     {/* Content Panel */} 
-    <Grid size={{xs:12,md:9}} sx={{ height: "102%" }}>
+    <Grid size={{xs:12,md:9.5}} sx={{ height: "101%" }}>
       {/* Content */}
       <Grid sx={{  padding: "20px", backgroundColor: "#FFFFFF", borderRadius: "20px", boxShadow: "0px 1px 4px #25243B0D" }}>
         {value === 0 && <BasicDetails />}

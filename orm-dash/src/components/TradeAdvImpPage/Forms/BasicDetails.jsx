@@ -2,7 +2,7 @@ import React from "react";
 import {  Typography, TextField, Select, MenuItem, Box, FormControl, FormLabel, Accordion, AccordionSummary, AccordionDetails } from "@mui/material";
 import Grid from "@mui/material/Grid2";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-// import "../style/BasicDetails.css";
+import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 
 const BasicDetails = () => {
     var lay = { xs: 12, md: 4 };
@@ -209,7 +209,7 @@ const BasicDetails = () => {
                     </Grid>
 
                     <Typography className="footer-note">
-                        * The transaction will be processed without GST invoice generation. Kindly contact the branch in case GST no. is to be changed/updated.
+                        <InfoOutlinedIcon sx={{ color: "gray", fontSize: "18px", mr: 1 }} />The transaction will be processed without GST invoice generation. Kindly contact the branch in case GST no. is to be changed/updated.
                     </Typography>
                 </AccordionDetails>
             </Accordion>

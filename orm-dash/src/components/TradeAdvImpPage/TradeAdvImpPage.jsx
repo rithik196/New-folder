@@ -50,7 +50,7 @@ export default function VerticalTabs() {
     </Grid>
 
     {/* Content Panel */} 
-    <Grid size={{xs:12,md:9.5}} sx={{ height: "101%" }}>
+    <Grid size={{xs:12,md:9.5}} sx={{ height: "102%" }}>
       {/* Content */}
       <Grid sx={{  padding: "20px", backgroundColor: "#FFFFFF", borderRadius: "20px", boxShadow: "0px 1px 4px #25243B0D" }}>
         {value === 0 && <BasicDetails />}

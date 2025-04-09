@@ -19,66 +19,114 @@ import {
   DialogActions,
   TextField,
   FormControl,
-  InputLabel,
+  FormLabel,
   Select,
   MenuItem,
-  Radio,
-  RadioGroup,
-  FormControlLabel,
+  IconButton,
   Checkbox,
 } from "@mui/material";
-
+import CloseIcon from "@mui/icons-material/Close";
 import Grid from "@mui/material/Grid2";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+
+// Mock data for the deals
+const mockDealData = {
+  existingDeal: {
+    fxCCY: "USD/INR",
+    dealMaturityDate: "2024-12-31",
+    dealUtilizationAmount: "500,000",
+    equivalentINR: "3,75,00,000",
+  },
+  connectRM: {
+    fxCCY: "EUR/INR",
+    dealPendingAmount: "200,000",
+  },
+};
 
 const DealDetails = () => {
+  const [editingIndex, setEditingIndex] = useState(-1);
   const [openDialog, setOpenDialog] = useState(false);
   const [records, setRecords] = useState([]);
   const [selectedRows, setSelectedRows] = useState([]);
+  const [formData, setFormData] = useState({
+    fxType: "",
+    dealId: "",
+    rate: "",
+    originalDealAmount: "",
+    fetchedData: null,
+  });
 
-  // Modal state
-  const [fxType, setFxType] = useState("");
-  const [hasExistingDeal, setHasExistingDeal] = useState("");
-  const [dealId, setDealId] = useState("");
-  const [originalDealAmount, setOriginalDealAmount] = useState("");
-  const [rate, setRate] = useState("");
-  const [utilizationAmount, setUtilizationAmount] = useState("");
-  const [equivalentINR, setEquivalentINR] = useState("");
-  const [realMaturityDate, setRealMaturityDate] = useState("");
-
-  const fxTypeOptions = ["Forward", "Swap", "Option", "Spot"];
-
-  const handleOpenDialog = () => setOpenDialog(true);
+  const handleOpenDialog = (index = -1) => {
+    setEditingIndex(index);
+    if (index >= 0) {
+      const record = records[index];
+      setFormData({
+        fxType: record.fxType === "Existing Deal" ? "existing" : "connect",
+        dealId: record.dealId,
+        rate: record.rate,
+        originalDealAmount: record.originalDealAmount,
+        fetchedData: {
+          fxCCY: record.fxCCY,
+          dealMaturityDate: record.dealMaturityDate,
+          dealUtilizationAmount: record.dealUtilizationAmount,
+          equivalentINR: record.equivalentINR,
+        },
+      });
+    }
+    setOpenDialog(true);
+  };
   const handleCloseDialog = () => {
     setOpenDialog(false);
-    resetForm();
+    setEditingIndex(-1);
+    setFormData({
+      fxType: "",
+      dealId: "",
+      rate: "",
+      originalDealAmount: "",
+      fetchedData: null,
+    });
   };
 
-  const resetForm = () => {
-    setFxType("");
-    setHasExistingDeal("");
-    setDealId("");
-    setOriginalDealAmount("");
-    setRate("");
-    setUtilizationAmount("");
-    setEquivalentINR("");
-    setRealMaturityDate("");
+  const handleGetDetails = () => {
+    // Simulate API call
+    setFormData((prev) => ({
+      ...prev,
+      fetchedData: mockDealData.existingDeal,
+    }));
   };
 
-  const handleSaveRecord = () => {
+  const handleSave = (action) => {
     const newRecord = {
-      fxType,
-      dealId,
-      originalDealAmount,
-      rate,
-      utilizationAmount,
-      equivalentINR,
-      realMaturityDate,
+      fxType: formData.fxType,
+      dealId: formData.dealId,
+      rate: formData.rate,
+      originalDealAmount: formData.originalDealAmount,
+      ...(formData.fetchedData || mockDealData.connectRM),
     };
-    setRecords([...records, newRecord]);
-    handleCloseDialog();
+
+    if (editingIndex >= 0) {
+      // Update existing record
+      const updatedRecords = [...records];
+      updatedRecords[editingIndex] = newRecord;
+      setRecords(updatedRecords);
+    } else {
+      // Add new record
+      setRecords([...records, newRecord]);
+    }
+
+    if (action === "close") {
+      handleCloseDialog();
+    } else {
+      setFormData({
+        fxType: "",
+        dealId: "",
+        rate: "",
+        originalDealAmount: "",
+        fetchedData: null,
+      });
+    }
   };
 
   const handleSelectRow = (index) => {
@@ -93,6 +141,19 @@ const DealDetails = () => {
     );
     setSelectedRows([]);
   };
+
+  // Calculate total remittance amount
+  const totalRemittanceAmount = records.reduce((total, record) => {
+    const amount = parseFloat(
+      record.originalDealAmount?.replace(/,/g, "") || 0
+    );
+    return total + amount;
+  }, 0);
+
+  // Format the number with commas
+  const formattedAmount = new Intl.NumberFormat("en-IN").format(
+    totalRemittanceAmount
+  );
 
   return (
     <Box className="details-container">
@@ -119,7 +180,7 @@ const DealDetails = () => {
                       </Typography>
                       <Box>
                         <Button
-                          variant="outlined"
+                          variant="text"
                           onClick={handleDeleteSelected}
                           sx={{ mr: 2 }}
                           disabled={selectedRows.length === 0}
@@ -127,9 +188,11 @@ const DealDetails = () => {
                           <DeleteIcon />
                         </Button>
                         <Button
-                          variant="contained"
+                          variant="text"
                           startIcon={<AddIcon />}
                           onClick={handleOpenDialog}
+                          
+                            sx={{color:"#9B1E26" }}
                         >
                           Add
                         </Button>
@@ -138,12 +201,12 @@ const DealDetails = () => {
                   </TableCell>
                 </TableRow>
                 <TableRow sx={{ backgroundColor: "#f5f5f5" }}>
-                  <TableCell>Select</TableCell>
+                  <TableCell></TableCell>
                   <TableCell>Fx Type</TableCell>
                   <TableCell>Deal ID</TableCell>
                   <TableCell>Original Deal Amount</TableCell>
                   <TableCell>Rate</TableCell>
-                  <TableCell>Utilization Amount</TableCell>
+                  <TableCell>Deal Amount Utilization</TableCell>
                   <TableCell>Equivalent INR</TableCell>
                 </TableRow>
               </TableHead>
@@ -156,59 +219,105 @@ const DealDetails = () => {
                   </TableRow>
                 ) : (
                   records.map((row, index) => (
-                    <TableRow key={index}>
-                      <TableCell>
+                    <TableRow
+                      key={index}
+                      hover
+                      onClick={() => handleOpenDialog(index)}
+                      sx={{ cursor: "pointer" }}
+                    >
+                      <TableCell onClick={(e) => e.stopPropagation()}>
                         <Checkbox
                           checked={selectedRows.includes(index)}
                           onChange={() => handleSelectRow(index)}
                         />
                       </TableCell>
-                      <TableCell>{row.fxType}</TableCell>
-                      <TableCell>{row.dealId}</TableCell>
-                      <TableCell>{row.originalDealAmount}</TableCell>
-                      <TableCell>{row.rate}</TableCell>
-                      <TableCell>{row.utilizationAmount}</TableCell>
-                      <TableCell>{row.equivalentINR}</TableCell>
+                      <TableCell>
+                        {row.fxType === "existing"
+                          ? "Existing Deal"
+                          : "Connect with RM"}
+                      </TableCell>
+                      <TableCell>{row.dealId || "-"}</TableCell>
+                      <TableCell>{row.originalDealAmount || "-"}</TableCell>
+                      <TableCell>{row.rate || "-"}</TableCell>
+                      <TableCell>{row.dealUtilizationAmount || "-"}</TableCell>
+                      <TableCell>
+                        {row.equivalentINR || row.dealPendingAmount || "-"}
+                      </TableCell>
                     </TableRow>
                   ))
                 )}
               </TableBody>
             </Table>
           </TableContainer>
-
-          {/* Total Section */}
-          <Box mt={3} p={2} bgcolor="#f5f5f5" borderRadius={1}>
-            <Grid container spacing={3}>
-              <Grid size={{ md: 4 }}>
-                <Typography variant="subtitle1">
-                  Total Remittance Amount
-                </Typography>
-                <Typography variant="h6">2,00,000 USD</Typography>
-              </Grid>
-              <Grid size={{ md: 4 }}>
-                <Typography variant="subtitle1">
-                  Amount to be debited from EEFC
-                </Typography>
-                <Typography variant="h6">0.0</Typography>
-              </Grid>
-              <Grid size={{ md: 4 }}>
-                <Typography variant="subtitle1">
-                  Actual Deal Booking Amount
-                </Typography>
-                <Typography variant="h6">0.0</Typography>
-              </Grid>
+          <Grid container spacing={3} sx={{ mt: 1 }}>
+            <Grid size={{ md: 4 }}>
+              <FormLabel sx={{ alignSelf: "start" }}>
+                Total Remittance Amount
+              </FormLabel>
+              <Box
+                sx={{
+                  fontWeight: 600,
+                  padding: "16.5px 14px",
+                  minHeight: "56px",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 0.5,
+                }}
+              >
+                <span>{formattedAmount}</span>
+                <span style={{ color: "#1281DD" }}>USD</span>
+              </Box>
             </Grid>
-          </Box>
 
-          {/* Action Buttons
-          <Box mt={3} display="flex" gap={2}>
-            <Button variant="outlined" color="error">
-              Clear All
-            </Button>
-            <Button variant="contained" color="primary">
-              Save and Close
-            </Button>
-          </Box> */}
+            <Grid size={{ md: 4 }}>
+              <FormLabel sx={{ alignSelf: "start" }}>
+                Amount to be debited from EEFC
+              </FormLabel>
+              <Box
+                sx={{
+                  fontWeight: 600,
+                  padding: "16.5px 14px",
+                  minHeight: "56px",
+                  display: "flex",
+                  alignItems: "center",
+                }}
+              >
+                0.0
+              </Box>
+            </Grid>
+
+            <Grid size={{ md: 4 }}>
+              <FormLabel sx={{ alignSelf: "start" }}>
+                Actual Deal Booking Amount
+              </FormLabel>
+              <Box
+                sx={{
+                  fontWeight: 600,
+                  padding: "16.5px 14px",
+                  minHeight: "56px",
+                  display: "flex",
+                  alignItems: "center",
+                }}
+              >
+                0.0
+              </Box>
+            </Grid>
+
+            <Grid size={{ md: 4 }}>
+              <FormLabel sx={{ alignSelf: "start" }}>Category</FormLabel>
+              <Box
+                sx={{
+                  fontWeight: 600,
+                  padding: "16.5px 14px",
+                  minHeight: "56px",
+                  display: "flex",
+                  alignItems: "center",
+                }}
+              >
+                -
+              </Box>
+            </Grid>
+          </Grid>
         </AccordionDetails>
       </Accordion>
 
@@ -219,124 +328,286 @@ const DealDetails = () => {
         maxWidth="md"
         fullWidth
       >
-        <DialogTitle>Add Deal Details</DialogTitle>
+        <DialogTitle sx={{ position: "relative" }}>
+          <IconButton
+            onClick={handleCloseDialog}
+            sx={{
+              position: "absolute",
+              right: 8,
+              top: 8,
+              color: "#9B1E26",
+            }}
+          >
+            <CloseIcon />
+          </IconButton>
+          <Typography sx={{ fontSize: "24px", fontWeight: 700 }}>
+            Deal Details
+          </Typography>
+          <Typography sx={{ fontSize: "14px" }}>
+            Fill in details to add in table
+          </Typography>
+        </DialogTitle>
+
         <DialogContent dividers>
           <Grid container spacing={3} sx={{ mt: 1 }}>
-            <Grid size={{ md: 6 }}>
+            <Grid size={{ md: 4 }}>
               <FormControl fullWidth>
-                <InputLabel>Fx Type *</InputLabel>
+                <FormLabel sx={{ alignSelf: "start", mb: 1 }}>
+                  Fx Type
+                </FormLabel>
                 <Select
-                  value={fxType}
-                  label="Fx Type *"
-                  onChange={(e) => setFxType(e.target.value)}
+                  displayEmpty
+                  value={formData.fxType}
+                  onChange={(e) =>
+                    setFormData({ ...formData, fxType: e.target.value })
+                  }
                 >
-                  {fxTypeOptions.map((type) => (
-                    <MenuItem key={type} value={type}>
-                      {type}
-                    </MenuItem>
-                  ))}
+                  <MenuItem value="" disabled>
+                    Select
+                  </MenuItem>
+                  <MenuItem value="existing">
+                    Do you have an existing Deal?
+                  </MenuItem>
+                  <MenuItem value="connect">Connect with RM</MenuItem>
                 </Select>
               </FormControl>
             </Grid>
 
-            {fxType && (
+            <Grid size={{ md: 8 }}></Grid>
+
+            {formData.fxType === "existing" && (
               <>
+                <Grid size={{ md: 4 }}>
+                  <FormLabel sx={{ alignSelf: "start" }}>Deal ID</FormLabel>
+                  <TextField
+                    fullWidth
+                    value={formData.dealId}
+                    onChange={(e) =>
+                      setFormData({ ...formData, dealId: e.target.value })
+                    }
+                  />
+                </Grid>
+                <Grid size={{ md: 4 }}>
+                  <FormLabel sx={{ alignSelf: "start" }}>Rate</FormLabel>
+                  <TextField
+                    fullWidth
+                    value={formData.rate}
+                    onChange={(e) =>
+                      setFormData({ ...formData, rate: e.target.value })
+                    }
+                  />
+                </Grid>
+                <Grid size={{ md: 4 }}>
+                  <FormLabel sx={{ alignSelf: "start" }}>
+                    Original Deal Amount
+                  </FormLabel>
+                  <TextField
+                    fullWidth
+                    value={formData.originalDealAmount}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        originalDealAmount: e.target.value,
+                      })
+                    }
+                  />
+                </Grid>
+
                 <Grid size={{ md: 12 }}>
-                  <FormControl component="fieldset">
-                    <RadioGroup
-                      row
-                      value={hasExistingDeal}
-                      onChange={(e) => setHasExistingDeal(e.target.value)}
-                    >
-                      <FormControlLabel
-                        value="yes"
-                        control={<Radio />}
-                        label="Yes, I have an existing deal"
-                      />
-                      <FormControlLabel
-                        value="no"
-                        control={<Radio />}
-                        label="No, create new deal"
-                      />
-                    </RadioGroup>
-                  </FormControl>
+                  <Button
+                    variant="outlined"
+                    sx={{
+                      borderColor: "#9B1E26",
+                      color: "#9B1E26",
+                      "&:hover": { borderColor: "dark#9B1E26" },
+                    }}
+                    onClick={handleGetDetails}
+                  >
+                    Get Details
+                  </Button>
                 </Grid>
 
-                {hasExistingDeal === "yes" && (
-                  <Grid size={{ md: 6 }}>
-                    <TextField
-                      fullWidth
-                      label="Deal ID *"
-                      value={dealId}
-                      onChange={(e) => setDealId(e.target.value)}
-                    />
-                  </Grid>
-                )}
+                {/* Always visible fields with default values */}
+                <Grid size={{ md: 4 }}>
+                  <FormLabel sx={{ alignSelf: "start" }}>Fx CCY</FormLabel>
+                  <Box
+                    sx={{
+                      fontWeight: 600,
+                      padding: "16.5px 14px",
+                      minHeight: "56px",
+                      display: "flex",
+                      alignItems: "center",
+                    }}
+                  >
+                    {formData.fetchedData?.fxCCY || "-"}
+                  </Box>
+                </Grid>
+                <Grid size={{ md: 4 }}>
+                  <FormLabel sx={{ alignSelf: "start" }}>
+                    Deal Maturity Date
+                  </FormLabel>
+                  <Box
+                    sx={{
+                      fontWeight: 600,
+                      padding: "16.5px 14px",
+                      minHeight: "56px",
+                      display: "flex",
+                      alignItems: "center",
+                    }}
+                  >
+                    {formData.fetchedData?.dealMaturityDate || "-"}
+                  </Box>
+                </Grid>
+                <Grid size={{ md: 4 }}>
+                  <FormLabel sx={{ alignSelf: "start" }}>
+                    Deal Utilization Amount
+                  </FormLabel>
+                  <Box
+                    sx={{
+                      fontWeight: 600,
+                      padding: "16.5px 14px",
+                      minHeight: "56px",
+                      display: "flex",
+                      alignItems: "center",
+                    }}
+                  >
+                    {formData.fetchedData?.dealUtilizationAmount || "-"}
+                  </Box>
+                </Grid>
+                <Grid size={{ md: 4 }}>
+                  <FormLabel sx={{ alignSelf: "start" }}>
+                    Equivalent INR
+                  </FormLabel>
+                  <Box
+                    sx={{
+                      fontWeight: 600,
+                      padding: "16.5px 14px",
+                      minHeight: "56px",
+                      display: "flex",
+                      alignItems: "center",
+                    }}
+                  >
+                    {formData.fetchedData?.equivalentINR || "-"}
+                  </Box>
+                </Grid>
+              </>
+            )}
 
+            {formData.fxType === "connect" && (
+              <>
                 <Grid size={{ md: 6 }}>
-                  <TextField
-                    fullWidth
-                    label="Original Deal Amount"
-                    value={originalDealAmount}
-                    onChange={(e) => setOriginalDealAmount(e.target.value)}
-                  />
+                  <FormLabel sx={{ alignSelf: "start" }}>Fx CCY</FormLabel>
+                  <Box
+                    sx={{
+                      fontWeight: 600,
+                      padding: "16.5px 14px",
+                      minHeight: "56px",
+                      display: "flex",
+                      alignItems: "center",
+                    }}
+                  >
+                    {mockDealData.connectRM.fxCCY || "-"}
+                  </Box>
                 </Grid>
-
                 <Grid size={{ md: 6 }}>
-                  <TextField
-                    fullWidth
-                    label="Rate"
-                    value={rate}
-                    onChange={(e) => setRate(e.target.value)}
-                  />
+                  <FormLabel sx={{ alignSelf: "start" }}>
+                    Deal Pending Amount
+                  </FormLabel>
+                  <Box
+                    sx={{
+                      fontWeight: 600,
+                      padding: "16.5px 14px",
+                      minHeight: "56px",
+                      display: "flex",
+                      alignItems: "center",
+                    }}
+                  >
+                    {mockDealData.connectRM.dealPendingAmount || "-"}
+                  </Box>
                 </Grid>
-
-                <Grid size={{ md: 6 }}>
-                  <TextField
-                    fullWidth
-                    label="Deal Amount Utilization"
-                    value={utilizationAmount}
-                    onChange={(e) => setUtilizationAmount(e.target.value)}
-                  />
-                </Grid>
-
-                <Grid size={{ md: 6 }}>
-                  <TextField
-                    fullWidth
-                    label="Equivalent INR *"
-                    value={equivalentINR}
-                    onChange={(e) => setEquivalentINR(e.target.value)}
-                  />
-                </Grid>
-
-                {hasExistingDeal === "yes" && (
-                  <Grid size={{ md: 6 }}>
-                    <TextField
-                      fullWidth
-                      label="Real Maturity Date"
-                      type="date"
-                      InputLabelProps={{ shrink: true }}
-                      value={realMaturityDate}
-                      onChange={(e) => setRealMaturityDate(e.target.value)}
-                    />
-                  </Grid>
-                )}
               </>
             )}
           </Grid>
         </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseDialog} color="secondary">
-            Cancel
-          </Button>
-          <Button
-            onClick={handleSaveRecord}
-            color="primary"
-            variant="contained"
-            disabled={!fxType || !equivalentINR}
-          >
-            Save
-          </Button>
+
+        <DialogActions sx={{ justifyContent: "center", pb: 3 }}>
+          <Box display="flex" gap={2}>
+            {formData.fxType === "connect" && (
+              <Button
+                onClick={() => handleSave("close")}
+                variant="contained"
+                sx={{
+                  bgcolor: "#9B1E26",
+                  color: "white",
+                  borderRadius: "20px",
+                }}
+              >
+                Save and Close
+              </Button>
+            )}
+
+            {formData.fxType === "existing" && (
+              <>
+                <Button
+                  onClick={() => {
+                    setFormData({
+                      ...formData,
+                      dealId: "",
+                      rate: "",
+                      originalDealAmount: "",
+                      fetchedData: null,
+                    });
+                  }}
+                  variant="outlined"
+                  sx={{
+                    borderColor: "#9B1E26",
+                    color: "#9B1E26",
+                    borderRadius: "20px",
+                  }}
+                >
+                  Clear All
+                </Button>
+                <Button
+                  onClick={() => handleSave("close")}
+                  variant="contained"
+                  sx={{
+                    bgcolor: "#9B1E26",
+                    color: "white",
+                    borderRadius: "20px",
+                  }}
+                >
+                  Save and Close
+                </Button>
+              </>
+            )}
+
+            {!formData.fxType && (
+              <>
+                <Button
+                  onClick={() => handleSave("close")}
+                  variant="outlined"
+                  sx={{
+                    borderColor: "#9B1E26",
+                    color: "#9B1E26",
+                    borderRadius: "20px",
+                  }}
+                >
+                  Save and Close
+                </Button>
+                <Button
+                  onClick={() => handleSave("next")}
+                  variant="contained"
+                  sx={{
+                    bgcolor: "#9B1E26",
+                    color: "white",
+                    borderRadius: "20px",
+                  }}
+                >
+                  Save and Next
+                </Button>
+              </>
+            )}
+          </Box>
         </DialogActions>
       </Dialog>
     </Box>

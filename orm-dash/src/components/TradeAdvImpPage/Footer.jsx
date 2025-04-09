@@ -1,29 +1,49 @@
 import React from "react";
 import { Box, Button } from "@mui/material";
-import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { saveFormData } from "../../redux/actions/formActions";
+import { useDispatch, useSelector } from "react-redux";
+import { setCurrentTab, resetForm } from "../TradeAdvImpPage/FormSlice";
 
-const Footer = ({ value, setValue, formData }) => {
+// Optional: simulate API
+const api = {
+  submitForm: async (data) => {
+    console.log("Submitted:", data);
+    return Promise.resolve();
+  },
+};
+
+const Footer = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { currentTab, formData } = useSelector((state) => state.form);
 
   const handleSaveAndExit = () => {
-    dispatch(saveFormData(formData));
+    // Save logic here if needed
     navigate("/dashboard");
   };
 
   const handleNext = () => {
-    if (value < 7) {
-      setValue(value + 1);
+    if (currentTab < 7) {
+      dispatch(setCurrentTab(currentTab + 1));
     } else {
-      dispatch(saveFormData(formData));
-      navigate("/success");
+      handleSubmit();
     }
   };
 
   const handlePrevious = () => {
-    if (value > 0) setValue(value - 1);
+    if (currentTab > 0) {
+      dispatch(setCurrentTab(currentTab - 1));
+    }
+  };
+
+  const handleSubmit = async () => {
+    try {
+      await api.submitForm(formData);
+      dispatch(resetForm());
+      navigate("/success");
+    } catch (error) {
+      console.error("Submission failed:", error);
+    }
   };
 
   return (
@@ -49,7 +69,7 @@ const Footer = ({ value, setValue, formData }) => {
       <Box sx={{ display: "flex", gap: "10px" }}>
         <Button
           variant="outlined"
-          disabled={value === 0}
+          disabled={currentTab === 0}
           onClick={handlePrevious}
           sx={{ borderColor: "#9B1E26", color: "#9B1E26", borderRadius: "32px" }}
         >
@@ -58,13 +78,13 @@ const Footer = ({ value, setValue, formData }) => {
         <Button
           variant="contained"
           onClick={handleNext}
-          sx={{ 
+          sx={{
             backgroundColor: "#9B1E26",
             borderRadius: "32px",
-            "&:hover": { backgroundColor: "#9B1E26" }
+            "&:hover": { backgroundColor: "#9B1E26" },
           }}
         >
-          {value === 7 ? "Confirm and Submit" : "Save and Next"}
+          {currentTab === 7 ? "Confirm and Submit" : "Save and Next"}
         </Button>
       </Box>
     </Box>

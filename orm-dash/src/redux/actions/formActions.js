@@ -1,7 +1,14 @@
-export const saveFormData = (data) => ({
-  type: "SAVE_FORM_DATA",
-  payload: data,
+export const updateTabData = (tabKey, data) => ({
+  type: 'UPDATE_TAB_DATA',
+  payload: { tabKey, data }
 });
+
+export const changeTab = (tabIndex) => ({
+  type: 'CHANGE_TAB',
+  payload: tabIndex
+});
+
+export const resetForm = () => ({ type: 'RESET_FORM' });
 
 export const setBeneficiaryBIC = (bic) => ({
   type: "SET_BENEFICIARY_BIC",

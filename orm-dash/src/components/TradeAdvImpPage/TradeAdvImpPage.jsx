@@ -1,76 +1,99 @@
 import * as React from "react";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
+import Grid from "@mui/material/Grid2";
+
+import { useSelector, useDispatch } from "react-redux";
+import { setCurrentTab } from "../TradeAdvImpPage/FormSlice";
 
 import Footer from "./Footer";
 import BasicDetails from "./Forms/BasicDetails";
 import TransactionDetails from "./Forms/TransactionDetails";
 import BeneficiaryDetails from "./Forms/BeneficiaryDetails";
-import Grid from "@mui/material/Grid2";
-import InvoiceDetails from "./Forms/InvoiveDetails"
-import Attachments from "./Forms/Attachments"
-import ShipmentDetails from "./Forms/ShipmentDetails"
-import Declaration from "./Forms/Declaration"
-import DealDetails from "./Forms/DealDetails"
+import InvoiceDetails from "./Forms/InvoiveDetails";
+import Attachments from "./Forms/Attachments";
+import ShipmentDetails from "./Forms/ShipmentDetails";
+import Declaration from "./Forms/Declaration";
+import DealDetails from "./Forms/DealDetails";
 
 export default function VerticalTabs() {
-  const [value, setValue] = React.useState(0);
+  const dispatch = useDispatch();
+  const currentTab = useSelector((state) => state.form.currentTab);
+  const formData = useSelector((state) => state.form.formData);
 
   const handleChange = (event, newValue) => {
-    setValue(newValue);
+    dispatch(setCurrentTab(newValue));
   };
 
   return (
-  
-
-<Grid container spacing={2} sx={{ height: "80vh" }}>
-  {/* Main Layout */}
-    {/* Sidebar */}
-    <Grid size={{xs:12,md:2.5}} sx={{ backgroundColor: "#efefef", paddingTop: "8px", borderTop: "1px dotted rgb(219, 219, 219)" }}>
-      <Tabs
-        orientation="vertical"
-        variant="scrollable"
-        value={value}
-        onChange={handleChange}
+    <Grid container spacing={2} sx={{ height: "81vh" }}>
+      {/* Sidebar Tabs */}
+      <Grid
+      size={{ xs: 12, md: 2.5 }}
+     
         sx={{
-          "& .MuiTab-root": { color: "#25243B", fontSize: "14px", padding: "8px 16px", fontWeight: "300", alignItems: "flex-start" },
-          "& .Mui-selected": { backgroundColor: "#FFFFFF", color: "#25243B !important", fontWeight: "600", borderLeft: "3px solid #9B1E26" },
-          "& .MuiTabs-indicator": { display: "none" },
+          backgroundColor: "#efefef",
+          paddingTop: "8px",
+          borderTop: "1px dotted rgb(219, 219, 219)",
         }}
       >
-        <Tab label="Basic Details" />
-        <Tab label="Transaction Details" />
-        <Tab label="Beneficiary Details" />
-        <Tab label="Invoice Details" />
-        <Tab label="Shipment Details" />
-        <Tab label="Attachments" />
-        <Tab label="Declarations" />
-        <Tab label="Deal Details" />
-      </Tabs>
-    </Grid>
-
-    {/* Content Panel */} 
-    <Grid size={{xs:12,md:9.5}} sx={{ height: "102%" }}>
-      {/* Content */}
-      <Grid sx={{  padding: "20px", backgroundColor: "#FFFFFF", borderRadius: "20px", boxShadow: "0px 1px 4px #25243B0D" }}>
-        {value === 0 && <BasicDetails />}
-        {value === 1 && <TransactionDetails />}
-        {value === 2 && <BeneficiaryDetails />}
-        {value === 3 && <InvoiceDetails/>}
-        {value === 4 && <ShipmentDetails/>}
-        {value === 5 && <Attachments/>}
-        {value === 6 && <Declaration/>}
-        {value === 7 && <DealDetails/>}
-        
+        <Tabs
+          orientation="vertical"
+          variant="scrollable"
+          value={currentTab}
+          onChange={handleChange}
+          sx={{
+            "& .MuiTab-root": {
+              color: "#25243B",
+              fontSize: "14px",
+              padding: "8px 16px",
+              fontWeight: "300",
+              alignItems: "flex-start",
+            },
+            "& .Mui-selected": {
+              backgroundColor: "#FFFFFF",
+              color: "#25243B !important",
+              fontWeight: "600",
+              borderLeft: "3px solid #9B1E26",
+            },
+            "& .MuiTabs-indicator": { display: "none" },
+          }}
+        >
+          <Tab label="Basic Details" />
+          <Tab label="Transaction Details" />
+          <Tab label="Beneficiary Details" />
+          <Tab label="Invoice Details" />
+          <Tab label="Shipment Details" />
+          <Tab label="Attachments" />
+          <Tab label="Declarations" />
+          <Tab label="Deal Details" />
+        </Tabs>
       </Grid>
 
-      {/* Footer */}
-      <Grid sx={{ marginTop: 2, borderTopLeftRadius: "20px", borderTopRightRadius: "20px", overflow: "hidden"}}>
-        <Footer value={value} setValue={setValue} />
+      {/* Tab Content */}
+      <Grid size={{ xs: 12, md: 9.5 }}  sx={{ height: "102%", overflowY: "auto" }}>
+        <Grid
+          sx={{
+            padding: "20px",
+            backgroundColor: "#FFFFFF",
+            borderRadius: "20px",
+            boxShadow: "0px 1px 4px #25243B0D",
+          }}
+        >
+          {currentTab === 0 && <BasicDetails initialData={formData.basicDetails} />}
+          {currentTab === 1 && <TransactionDetails initialData={formData.transactionDetails} />}
+          {currentTab === 2 && <BeneficiaryDetails initialData={formData.beneficiaryDetails} />}
+          {currentTab === 3 && <InvoiceDetails initialData={formData.invoiceDetails} />}
+          {currentTab === 4 && <ShipmentDetails initialData={formData.shipmentDetails} />}
+          {currentTab === 5 && <Attachments initialData={formData.attachments} />}
+          {currentTab === 6 && <Declaration initialData={formData.declarations} />}
+          {currentTab === 7 && <DealDetails initialData={formData.dealDetails} />}
+        </Grid>
+
+        <Grid sx={{ marginTop: 2 }}>
+          <Footer />
+        </Grid>
       </Grid>
     </Grid>
-</Grid>
-
-
   );
 }

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   IconButton,
   Radio,
@@ -21,33 +21,53 @@ import {
 import CloseIcon from "@mui/icons-material/Close";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Grid from "@mui/material/Grid2";
+import { updateTabData } from "../FormSlice"; // adjust the path
 
-const Picklist = ({ selectedValue, setSelectedValue, field, reduxAction }) => {
+const Picklist = ({ fieldKey, tabKey }) => {
   const dispatch = useDispatch();
+  const storedValue = useSelector(
+    (state) => state.form.formData[tabKey]?.[fieldKey] || ""
+  );
+
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [tempSelectedRow, setTempSelectedRow] = useState(null);
+  const [tempSelectedRow, setTempSelectedRow] = useState("");
+  const currentTabData = useSelector(
+    (state) => state.form.formData[tabKey] || {}
+  );
 
-  const handleOpen = () => setIsModalOpen(true);
-  const handleClose = () => setIsModalOpen(false);
-
-  const handleRowSelection = (params) => {
-    setTempSelectedRow(params.row.bicCode);
+  const handleOpen = () => {
+    setTempSelectedRow(storedValue);
+    setIsModalOpen(true);
   };
 
+  const handleClose = () => setIsModalOpen(false);
+
   const handleAddAndClose = () => {
-    if (tempSelectedRow) {
-      dispatch(reduxAction(tempSelectedRow)); // Update Redux
-      setSelectedValue(tempSelectedRow); // Update Local State
-    }
+    dispatch(
+      updateTabData({
+        tabKey,
+        data: {
+          ...currentTabData,
+          [fieldKey]: tempSelectedRow,
+        },
+      })
+    );
     handleClose();
   };
 
   const handleClear = () => {
-    dispatch(reduxAction("")); // Clear Redux
-    setSelectedValue(""); // Clear TextField
-    setTempSelectedRow(null); // Clear Selected Value in Modal
+    dispatch(
+      updateTabData({
+        tabKey,
+        data: {
+          ...currentTabData,
+          [fieldKey]: "",
+        },
+      })
+    );
+    setTempSelectedRow(null);
   };
 
   const rows = [
@@ -67,14 +87,10 @@ const Picklist = ({ selectedValue, setSelectedValue, field, reduxAction }) => {
 
   return (
     <>
-      {/* Input Field with Buttons */}
       <Grid container spacing={0} mt={0}>
-        {/* Input Field */}
         <Grid size={{ xs: 12, md: 8 }}>
-        <TextField size="small" fullWidth value={selectedValue} disabled />
+          <TextField size="small" fullWidth value={storedValue} disabled />
         </Grid>
-
-        {/* Clear Button */}
         <Grid size={{ xs: 12, md: 2 }}>
           <IconButton
             onClick={handleClear}
@@ -86,15 +102,10 @@ const Picklist = ({ selectedValue, setSelectedValue, field, reduxAction }) => {
             }}
           >
             <CloseIcon
-              sx={{
-                border: "1px solid #9B1E26",
-                borderRadius: "15px",
-              }}
+              sx={{ border: "1px solid #9B1E26", borderRadius: "15px" }}
             />
           </IconButton>
         </Grid>
-
-        {/* More Options Button */}
         <Grid size={{ xs: 12, md: 2 }}>
           <IconButton
             onClick={handleOpen}
@@ -110,7 +121,6 @@ const Picklist = ({ selectedValue, setSelectedValue, field, reduxAction }) => {
         </Grid>
       </Grid>
 
-      {/* Dialog Modal */}
       <Dialog open={isModalOpen} onClose={handleClose} maxWidth="md" fullWidth>
         <DialogTitle>
           BIC Details
@@ -122,23 +132,22 @@ const Picklist = ({ selectedValue, setSelectedValue, field, reduxAction }) => {
           </IconButton>
         </DialogTitle>
         <DialogContent>
-          {/* Search & Filter Section */}
-          <Grid container spacing={2} alignItems="center">
-            <Grid item xs={6}>
+          <Grid container spacing={2} alignItems="center" sx={{ mt: 2 }}>
+            <Grid size={{ xs: 12, md: 6 }}>
               <TextField size="small" fullWidth placeholder="Search" />
             </Grid>
-            <Grid item xs={6} textAlign="right">
-              <Select size="small" defaultValue="">
+            <Grid size={{ xs: 12, md: 6 }} textAlign="right">
+              <Select size="small" defaultValue="" sx={{ minWidth: 150 }}>
                 <MenuItem value="">All Columns</MenuItem>
               </Select>
             </Grid>
           </Grid>
 
-          {/* BIC Details Table */}
           <TableContainer component={Paper} sx={{ mt: 2 }}>
             <Table>
               <TableHead>
                 <TableRow>
+                  <TableCell></TableCell>
                   <TableCell>BIC Code</TableCell>
                   <TableCell>Institution Name</TableCell>
                   <TableCell>Physical Address</TableCell>
@@ -148,14 +157,20 @@ const Picklist = ({ selectedValue, setSelectedValue, field, reduxAction }) => {
               </TableHead>
               <TableBody>
                 {rows.map((row) => (
-                  <TableRow key={row.id}>
-                    <TableCell>
+                  <TableRow key={row.id} hover>
+                    <TableCell padding="checkbox">
                       <Radio
                         checked={tempSelectedRow === row.bicCode}
                         onChange={() => setTempSelectedRow(row.bicCode)}
+                        sx={{
+                          color: "#9B1E26",
+                          "&.Mui-checked": {
+                            color: "#9B1E26",
+                          },
+                        }}
                       />
-                      {row.bicCode}
                     </TableCell>
+                    <TableCell>{row.bicCode}</TableCell>
                     <TableCell>{row.institution}</TableCell>
                     <TableCell>First Canadian Place</TableCell>
                     <TableCell>First Canadian Place, Toronto</TableCell>
@@ -167,19 +182,33 @@ const Picklist = ({ selectedValue, setSelectedValue, field, reduxAction }) => {
           </TableContainer>
         </DialogContent>
 
-        {/* Action Buttons */}
-        <DialogActions sx={{ justifyContent: "center", pb: 2 }}>
+        <DialogActions sx={{ justifyContent: "center", gap: 3, pb: 3, pt: 2 }}>
           <Button
             variant="outlined"
             onClick={handleClose}
-            sx={{ borderColor: "#9B1E26", color: "#9B1E26" }}
+            sx={{
+              borderColor: "#9B1E26",
+              color: "#9B1E26",
+              borderRadius: "30px",
+              width: "180px",
+              height: "40px",
+              textTransform: "none",
+            }}
           >
             Cancel
           </Button>
           <Button
             variant="contained"
-            sx={{ backgroundColor: "#9B1E26" }}
             onClick={handleAddAndClose}
+            disabled={!tempSelectedRow}
+            sx={{
+              backgroundColor: "#9B1E26",
+              borderRadius: "30px",
+              width: "180px",
+              height: "40px",
+              textTransform: "none",
+              ":hover": { backgroundColor: "#7e1820" },
+            }}
           >
             Add & Close
           </Button>

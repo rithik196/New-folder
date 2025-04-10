@@ -295,7 +295,7 @@ const ShipmentDetails = () => {
             </Grid>
             <Grid size={lay}>
               <FormControl fullWidth variant="outlined">
-                <FormLabel sx={{ fontSize: "0.875rem", mb: 1 }}>BL/AWB Date</FormLabel>
+                <FormLabel sx={{ fontSize: "0.875rem" }}>BL/AWB Date</FormLabel>
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <DatePicker
                
@@ -341,7 +341,7 @@ const ShipmentDetails = () => {
             </Grid>
             <Grid size={lay}>
               <FormControl fullWidth variant="outlined">
-                <FormLabel sx={{ fontSize: "0.875rem", mb: 1 }}>Shipment Date</FormLabel>
+                <FormLabel sx={{ fontSize: "0.875rem"}}>Shipment Date</FormLabel>
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <DatePicker
                     

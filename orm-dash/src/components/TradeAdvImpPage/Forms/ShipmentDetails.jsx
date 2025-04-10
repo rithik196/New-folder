@@ -232,7 +232,7 @@ const ShipmentDetails = () => {
                         >
                           <DeleteIcon />
                         </Button>
-                        <Button variant="outlined" startIcon={<AddIcon />} onClick={handleOpenDialog}>
+                        <Button variant="text" startIcon={<AddIcon />} onClick={handleOpenDialog} sx={{color:"#9B1E26"}}>
                           Add
                         </Button>
                       </Box>
@@ -277,7 +277,8 @@ const ShipmentDetails = () => {
         </AccordionDetails>
       </Accordion>
       <Dialog open={openDialog} onClose={handleCloseDialog} fullWidth maxWidth="lg">
-        <DialogTitle>Shipment Details</DialogTitle>
+        <DialogTitle>Transport Details</DialogTitle>
+        <Typography>Fill in details to add in table</Typography>
         <DialogContent dividers>
           <Grid container spacing={2} sx={{ mt: 1 }}>
             <Grid size={lay}>

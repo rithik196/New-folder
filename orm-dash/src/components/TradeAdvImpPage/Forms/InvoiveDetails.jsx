@@ -41,7 +41,7 @@ function createData(
 ) {
   return { id, hsCode, category, description, policyConditions, licenseAdded };
 }
-// hhfhdfhfhgh
+
 const hsCodeData = {
   2811100: {
     category: "Chemical",

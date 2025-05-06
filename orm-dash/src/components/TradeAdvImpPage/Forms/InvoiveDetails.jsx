@@ -25,6 +25,7 @@ import {
   Select,
 } from "@mui/material";
 import Grid from "@mui/material/Grid2";
+import InvoiceDetailsGrid from "./InvoiceDetailsGrid";
 import DeleteIcon from "@mui/icons-material/Delete";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { grey } from "@mui/material/colors";
@@ -232,7 +233,7 @@ const InvoiceDetails = () => {
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
   const [openModal, setOpenModal] = useState(false);
-const [selectedRow, setSelectedRow] = useState(null);
+  const [selectedRow, setSelectedRow] = useState(null);
 
   const handleSelectAllClick = (event) => {
     setSelected(event.target.checked ? tableRows.map((n) => n.id) : []);
@@ -260,123 +261,123 @@ const [selectedRow, setSelectedRow] = useState(null);
 
   return (
     <>
-    <Box>
-      <Accordion defaultExpanded>
-        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-          <Typography variant="h6">Goods Details</Typography>
-        </AccordionSummary>
-        <AccordionDetails>
-          <Grid container spacing={2} mb={2} mt={1} ml={"1px"}>
-            <Grid
-              sx={{
+      <Box>
+        <Accordion defaultExpanded>
+          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+            <Typography variant="h6">Goods Details</Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            <Grid container spacing={2} mb={2} mt={1} ml={"1px"}>
+              <Grid
+                sx={{
                   display: "flex",
                   flexDirection: "row",
                   alignItems: "flex-start",
                 }}
                 size={{ xs: 12, md: 4 }}
-                >
-              <FormControl fullWidth variant="outlined" required>
-                <FormLabel>HS Code</FormLabel>
-                <TextField
-                  variant="outlined"
-                  size="small"
-                  value={hsCodeInput}
-                  onChange={(e) => setHsCodeInput(e.target.value)}
-                />
-              </FormControl>
-              <Button
-                variant="contained"
-                sx={{
-                  mt: { xs: 2, md: 3 },
-                  ml: 4,
-                  height: "35px",
-                  borderRadius: "20px",
-                  backgroundColor: "#9B1E26",
-                  "&:hover": {
+              >
+                <FormControl fullWidth variant="outlined" required>
+                  <FormLabel>HS Code</FormLabel>
+                  <TextField
+                    variant="outlined"
+                    size="small"
+                    value={hsCodeInput}
+                    onChange={(e) => setHsCodeInput(e.target.value)}
+                  />
+                </FormControl>
+                <Button
+                  variant="contained"
+                  sx={{
+                    mt: { xs: 2, md: 3 },
+                    ml: 4,
+                    height: "35px",
+                    borderRadius: "20px",
+                    backgroundColor: "#9B1E26",
+                    "&:hover": {
                       backgroundColor: "#9B1E26", // darker brown for hover
                     },
-                }}
-                onClick={() => {
+                  }}
+                  onClick={() => {
                     const hsDetails = hsCodeData[hsCodeInput.trim()];
                     if (!hsDetails) {
-                        alert("HS Code not found in database.");
-                        return;
+                      alert("HS Code not found in database.");
+                      return;
                     }
-                    
+
                     const newId = tableRows.length
-                    ? Math.max(...tableRows.map((r) => r.id)) + 1
-                    : 1;
+                      ? Math.max(...tableRows.map((r) => r.id)) + 1
+                      : 1;
                     const newRow = {
-                        id: newId,
-                        hsCode: hsCodeInput.trim(),
-                        category: hsDetails.category,
-                        description: hsDetails.description,
-                        policyConditions: hsDetails.policyConditions,
-                        licenseAdded: hsDetails.licenseAdded,
+                      id: newId,
+                      hsCode: hsCodeInput.trim(),
+                      category: hsDetails.category,
+                      description: hsDetails.description,
+                      policyConditions: hsDetails.policyConditions,
+                      licenseAdded: hsDetails.licenseAdded,
                     };
-                    
+
                     const updatedRows = [...tableRows, newRow]; // add more
                     dispatch(
-                        updateTabData({
-                            tabKey: "invoiceTableRows",
-                            data: updatedRows,
-                        })
+                      updateTabData({
+                        tabKey: "invoiceTableRows",
+                        data: updatedRows,
+                      })
                     );
                     setHsCodeInput(""); // clear input
-                }}
+                  }}
                 >
-                Add
-              </Button>
+                  Add
+                </Button>
+              </Grid>
             </Grid>
-          </Grid>
-          <Paper sx={{ width: "100%", mb: 2 }}>
-            <EnhancedTableToolbar
-              numSelected={selected.length}
-              onDelete={handleDelete}
+            <Paper sx={{ width: "100%", mb: 2 }}>
+              <EnhancedTableToolbar
+                numSelected={selected.length}
+                onDelete={handleDelete}
               />
-            <TableContainer>
-              <Table>
-                <EnhancedTableHead
-                  numSelected={selected.length}
-                  onSelectAllClick={handleSelectAllClick}
-                  rowCount={tableRows.length}
+              <TableContainer>
+                <Table>
+                  <EnhancedTableHead
+                    numSelected={selected.length}
+                    onSelectAllClick={handleSelectAllClick}
+                    rowCount={tableRows.length}
                   />
-                <TableBody>
-                  {visibleRows.map((row) => (
-                    <TableRow
-                    hover
-                    onClick={(event) => handleClick(event, row.id)}
-                    role="checkbox"
-                    aria-checked={selected.includes(row.id)}
-                    tabIndex={-1}
-                    key={row.id}
-                    selected={selected.includes(row.id)}
-                    sx={{ cursor: "pointer" }}
-                    >
-                      <TableCell padding="checkbox">
+                  <TableBody>
+                    {visibleRows.map((row) => (
+                      <TableRow
+                        hover
+                        onClick={(event) => handleClick(event, row.id)}
+                        role="checkbox"
+                        aria-checked={selected.includes(row.id)}
+                        tabIndex={-1}
+                        key={row.id}
+                        selected={selected.includes(row.id)}
+                        sx={{ cursor: "pointer" }}
+                      >
                         <TableCell padding="checkbox">
-                          <Checkbox
-                            checked={selected.includes(row.id)}
-                            sx={{
+                          <TableCell padding="checkbox">
+                            <Checkbox
+                              checked={selected.includes(row.id)}
+                              sx={{
                                 color: "brown",
                                 "&.Mui-checked": {
-                                    color: "brown",
+                                  color: "brown",
                                 },
                                 "&.MuiCheckbox-indeterminate": {
-                                    color: "brown",
+                                  color: "brown",
                                 },
-                            }}
+                              }}
                             />
+                          </TableCell>
                         </TableCell>
-                      </TableCell>
-                      <TableCell>{row.hsCode}</TableCell>
-                      <TableCell>{row.category}</TableCell>
-                      <TableCell>{row.description}</TableCell>
-                      <TableCell>{row.policyConditions}</TableCell>
-                      <TableCell>
-                        <Typography
-                          component="span"
-                          sx={{
+                        <TableCell>{row.hsCode}</TableCell>
+                        <TableCell>{row.category}</TableCell>
+                        <TableCell>{row.description}</TableCell>
+                        <TableCell>{row.policyConditions}</TableCell>
+                        <TableCell>
+                          <Typography
+                            component="span"
+                            sx={{
                               color: "#9B1E26",
                               textDecoration: "underline",
                               cursor: "pointer",
@@ -384,192 +385,212 @@ const [selectedRow, setSelectedRow] = useState(null);
                               fontWeight: 500,
                             }}
                             onClick={(event) => {
-                                event.stopPropagation();
-                                setSelectedRow(row); // set current row data
-                                setOpenModal(true);  // open modal
+                              event.stopPropagation();
+                              setSelectedRow(row); // set current row data
+                              setOpenModal(true); // open modal
                             }}
-                            >
-                          View
-                        </Typography>
-                      </TableCell>
+                          >
+                            View
+                          </Typography>
+                        </TableCell>
 
-                      <TableCell>{row.licenseAdded}</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          </Paper>
+                        <TableCell>{row.licenseAdded}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </Paper>
 
-          <Grid container>
-            <Grid size={{ md: 12 }}>
-              <Box
-                sx={{
+            <Grid container>
+              <Grid size={{ md: 12 }}>
+                <Box
+                  sx={{
                     display: "flex",
                     alignItems: "flex-start",
                     width: "100%",
-                }}
+                  }}
                 >
-                <Checkbox
-                  checked={checked1}
-                  onChange={handleCheckboxChange1}
-                  sx={{
+                  <Checkbox
+                    checked={checked1}
+                    onChange={handleCheckboxChange1}
+                    sx={{
                       padding: 0,
                       marginRight: 1,
                       color: "brown",
                       "&.Mui-checked": {
-                          color: "brown",
-                        },
+                        color: "brown",
+                      },
                     }}
-                    />
+                  />
 
-                <Typography variant="body2" textAlign={"left"}>
-                  This is to certify that end use of goods involved in this
-                  transaction is not for arms and ammunition related purpose{" "}
-                  <span style={{ color: "red" }}>*</span>
-                </Typography>
-              </Box>
-            </Grid>
+                  <Typography variant="body2" textAlign={"left"}>
+                    This is to certify that end use of goods involved in this
+                    transaction is not for arms and ammunition related purpose{" "}
+                    <span style={{ color: "red" }}>*</span>
+                  </Typography>
+                </Box>
+              </Grid>
 
-            <Grid size={{ md: 12 }}>
-              <Box
-                sx={{
+              <Grid size={{ md: 12 }}>
+                <Box
+                  sx={{
                     display: "flex",
                     alignItems: "flex-start",
                     width: "100%",
-                }}
+                  }}
                 >
-                <Checkbox
-                  checked={checked2}
-                  onChange={handleCheckboxChange2}
-                  sx={{
+                  <Checkbox
+                    checked={checked2}
+                    onChange={handleCheckboxChange2}
+                    sx={{
                       padding: 0,
                       marginRight: 1,
                       color: "brown",
                       "&.Mui-checked": {
-                          color: "brown",
-                        },
+                        color: "brown",
+                      },
                     }}
-                    />
-                <Typography variant="body2" textAlign={"left"}>
-                  This transaction does not violate the provisions of
-                  OFAC/US/UN/EU/India and other sanctions (as applicable) that
-                  are currently in force <span style={{ color: "red" }}>*</span>
-                </Typography>
-              </Box>
+                  />
+                  <Typography variant="body2" textAlign={"left"}>
+                    This transaction does not violate the provisions of
+                    OFAC/US/UN/EU/India and other sanctions (as applicable) that
+                    are currently in force{" "}
+                    <span style={{ color: "red" }}>*</span>
+                  </Typography>
+                </Box>
+              </Grid>
             </Grid>
-          </Grid>
-        </AccordionDetails>
-      </Accordion>
-      <Accordion defaultExpanded>
-        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-          <Typography variant="h6">Invoice Details</Typography>
-        </AccordionSummary>
-        <AccordionDetails>
-          <Grid container spacing={2} mt={1} ml={1}>
-            <Grid size={{ xs: 12, md: 4 }}>
-              <Box
-                sx={{
+          </AccordionDetails>
+        </Accordion>
+        <Accordion defaultExpanded>
+          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+            <Typography variant="h6">Invoice Details</Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            <Grid container spacing={2} mt={1} ml={1}>
+              <Grid size={{ xs: 12, md: 4 }}>
+                <Box
+                  sx={{
                     display: "flex",
                     flexDirection: "column",
                     alignItems: "flex-start",
                     gap: 2,
-                }}
+                  }}
                 >
-                <FormControlLabel
-                  control={
+                  <FormControlLabel
+                    control={
                       <Checkbox
-                      checked={checked3}
-                      onChange={handleCheckboxChange3}
-                      sx={{
+                        checked={checked3}
+                        onChange={handleCheckboxChange3}
+                        sx={{
                           color: "brown",
                           "&.Mui-checked": {
-                              color: "brown",
-                            },
-                            "&.MuiCheckbox-indeterminate": {
-                                color: "brown",
-                            },
+                            color: "brown",
+                          },
+                          "&.MuiCheckbox-indeterminate": {
+                            color: "brown",
+                          },
                         }}
-                        />
+                      />
                     }
                     label={
-                        <Typography variant="body2">
-                      Part Payment Already made
-                    </Typography>
-                  }
+                      <Typography variant="body2">
+                        Part Payment Already made
+                      </Typography>
+                    }
                   />
 
-                <FormControl fullWidth variant="outlined">
-                  <FormLabel sx={{ alignSelf: "start" }}>
-                    Type of Import <span style={{ color: "red" }}>*</span>
-                  </FormLabel>
-                  <Select
-                    size="small"
-                    value={selectedImport}
-                    onChange={handleImportChange}
-                    fullWidth
+                  <FormControl fullWidth variant="outlined">
+                    <FormLabel sx={{ alignSelf: "start" }}>
+                      Type of Import <span style={{ color: "red" }}>*</span>
+                    </FormLabel>
+                    <Select
+                      size="small"
+                      value={selectedImport}
+                      onChange={handleImportChange}
+                      fullWidth
                     >
-                    <MenuItem value="">Select</MenuItem>
-                    {importOptions.map((option) => (
+                      <MenuItem value="">Select</MenuItem>
+                      {importOptions.map((option) => (
                         <MenuItem key={option.value} value={option.value}>
-                        {option.label}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              </Box>
+                          {option.label}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                </Box>
+              </Grid>
             </Grid>
-          </Grid>
-        </AccordionDetails>
-      </Accordion>
-    </Box>
 
+            <InvoiceDetailsGrid />
+          </AccordionDetails>
+        </Accordion>
+      </Box>
 
-    {openModal && (
-  <Box
-    sx={{
-      position: 'fixed',
-      top: 0, left: 0, right: 0, bottom: 0,
-      backgroundColor: 'rgba(0, 0, 0, 0.5)',
-      zIndex: 1300,
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-    }}
-    onClick={() => setOpenModal(false)}
-  >
-    <Paper
-      sx={{
-        minWidth: 300,
-        padding: 4,
-        backgroundColor: 'white',
-        borderRadius: 2,
-      }}
-      onClick={(e) => e.stopPropagation()}
-    >
-      <Typography variant="h6" gutterBottom>
-        HS Code Details
-      </Typography>
-      {selectedRow && (
-        <Box>
-          <Typography><strong>HS Code:</strong> {selectedRow.hsCode}</Typography>
-          <Typography><strong>Category:</strong> {selectedRow.category}</Typography>
-          <Typography><strong>Description:</strong> {selectedRow.description}</Typography>
-          <Typography><strong>Policy Conditions:</strong> {selectedRow.policyConditions}</Typography>
-          <Typography><strong>License Added:</strong> {selectedRow.licenseAdded}</Typography>
+      {openModal && (
+        <Box
+          sx={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: "rgba(0, 0, 0, 0.5)",
+            zIndex: 1300,
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+          onClick={() => setOpenModal(false)}
+        >
+          <Paper
+            sx={{
+              minWidth: 300,
+              padding: 4,
+              backgroundColor: "white",
+              borderRadius: 2,
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <Typography variant="h6" gutterBottom>
+              HS Code Details
+            </Typography>
+            {selectedRow && (
+              <Box>
+                <Typography>
+                  <strong>HS Code:</strong> {selectedRow.hsCode}
+                </Typography>
+                <Typography>
+                  <strong>Category:</strong> {selectedRow.category}
+                </Typography>
+                <Typography>
+                  <strong>Description:</strong> {selectedRow.description}
+                </Typography>
+                <Typography>
+                  <strong>Policy Conditions:</strong>{" "}
+                  {selectedRow.policyConditions}
+                </Typography>
+                <Typography>
+                  <strong>License Added:</strong> {selectedRow.licenseAdded}
+                </Typography>
+              </Box>
+            )}
+            <Button
+              onClick={() => setOpenModal(false)}
+              sx={{
+                mt: 2,
+                backgroundColor: "#9B1E26",
+                color: "white",
+                "&:hover": { backgroundColor: "#7a121a" },
+              }}
+            >
+              Close
+            </Button>
+          </Paper>
         </Box>
       )}
-      <Button
-        onClick={() => setOpenModal(false)}
-        sx={{ mt: 2, backgroundColor: '#9B1E26', color: 'white', '&:hover': { backgroundColor: '#7a121a' } }}
-      >
-        Close
-      </Button>
-    </Paper>
-  </Box>
-)}
-    
-                    </>
+    </>
   );
 };
 

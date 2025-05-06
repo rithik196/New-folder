@@ -71,7 +71,7 @@ export default function VerticalTabs() {
       </Grid>
 
       {/* Tab Content */}
-      <Grid size={{ xs: 12, md: 9.5 }}  sx={{ height: "102%", overflowY: "auto" }}>
+      <Grid size={{ xs: 12, md: 9.5 }}  sx={{ height: "103%", overflowY: "auto" }}>
         <Grid
           sx={{
             padding: "20px",

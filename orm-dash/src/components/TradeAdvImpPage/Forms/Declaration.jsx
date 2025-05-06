@@ -9,19 +9,48 @@ import {
 } from "@mui/material";
 import Grid from "@mui/material/Grid2";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import { useDispatch, useSelector } from "react-redux";
+import { updateTabData } from "../FormSlice";
 
 const Declaration = () => {
-    const [checked1, setChecked1] = useState(false);
-    const [checked2, setChecked2] = useState(false);
+    // const [checked1, setChecked1] = useState(false);
+    // const [checked2, setChecked2] = useState(false);
 
-    const handleCheckboxChange1 = (event) => {
-        setChecked1(event.target.checked);
+      const dispatch = useDispatch();
+      const declarationData = useSelector(
+        (state) => state.form.formData.declarations || {});
+
+        const checked1 = declarationData.checkboxes?.checked1 || false;
+        const checked2 = declarationData.checkboxes?.checked2 || false;
+
+   const handleCheckboxChange1 = (event) => {
+      dispatch(
+        updateTabData({
+          tabKey: "declarations",
+          data: {
+            ...declarationData,
+            checkboxes: {
+              ...declarationData.checkboxes,
+              checked1: event.target.checked,
+            },
+          },
+        })
+      );
     };
-
-    const handleCheckboxChange2 = (event) => {
-        setChecked2(event.target.checked);
+   const handleCheckboxChange2 = (event) => {
+      dispatch(
+        updateTabData({
+          tabKey: "declarations",
+          data: {
+            ...declarationData,
+            checkboxes: {
+              ...declarationData.checkboxes,
+              checked2: event.target.checked,
+            },
+          },
+        })
+      );
     };
-
     return (
         <Box className="boxcontainer">
             <Accordion defaultExpanded>
@@ -35,7 +64,10 @@ const Declaration = () => {
                                 <Checkbox 
                                     checked={checked1} 
                                     onChange={handleCheckboxChange1} 
-                                    sx={{ marginTop: "3px", padding: 0, marginRight: 1 }} 
+                                    sx={{ marginTop: "3px", padding: 0, marginRight: 1,color: "brown",
+                                        "&.Mui-checked": {
+                                          color: "brown",
+                                        }, }} 
                                 />
                                 <Typography variant="body2" textAlign={"left"}>
                                     I/We hereby declare that all Foreign Exchange transactions, as may be entrusted 
@@ -56,7 +88,10 @@ const Declaration = () => {
                                 <Checkbox 
                                     checked={checked2} 
                                     onChange={handleCheckboxChange2} 
-                                    sx={{ marginTop: "3px", padding: 0, marginRight: 1 }} 
+                                    sx={{ marginTop: "3px", padding: 0, marginRight: 1 ,color: "brown",
+                                        "&.Mui-checked": {
+                                          color: "brown",
+                                        },}} 
                                 />
                                 <Typography variant="body2" textAlign={"left"}>
                                     I/We declare that the statements made by me/us on this form are true and that 

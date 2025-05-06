@@ -1,7 +1,7 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import { ThemeProvider } from "@mui/material/styles";
-import {primarytTheme} from "../src/theme";
+import {primarytTheme,secondaryTheme} from "../src/theme";
 import Layout from "../src/layout";
 import LoginModal from "../src/LoginModal";
 import Dashboard from "./pages/Dashboard";
@@ -11,6 +11,8 @@ import History from "./pages/History";
 import Drafts from "./pages/Drafts";
 import PageLayout from './components/TradeAdvImpPage/PageLayout'
 import SuccessPage from "./components/TradeAdvImpPage/Forms/Success"
+import IRMDisposal from "./pages/IRMDisposal";
+import IRMDisposalForm from "./pages/IRMDisposalForm/IRMDisposalForm";
 
 const PrivateRoute = ({ element }) => {
   const isAuthenticated = localStorage.getItem("isAuthenticated") === "true";
@@ -21,6 +23,8 @@ const PrivateRoute = ({ element }) => {
 function App() {
   return (
     <ThemeProvider theme={primarytTheme}>
+      <ThemeProvider theme={secondaryTheme}>
+
       <Router>
         <Routes>
           {/* Default route opens the Login Page */}
@@ -33,6 +37,8 @@ function App() {
             
             <Route path="trade-advance-imports" element={<PageLayout />} /> {/* NEW PAGE */}
             <Route path="beneficiary-list" element={<BeneficiaryList />} />
+            <Route path="/dashboard/IRM-disposal-grid" element={<IRMDisposal />} />
+            <Route path="/dashboard/IRM-disposal-grid/irm-disposal-form" element={<IRMDisposalForm />} />
             <Route path="reports" element={<Reports />} />
             <Route path="history" element={<History />} />
             <Route path="drafts" element={<Drafts />} />
@@ -40,6 +46,7 @@ function App() {
           </Route>
         </Routes>
       </Router>
+      </ThemeProvider>
     </ThemeProvider>
   );
 }

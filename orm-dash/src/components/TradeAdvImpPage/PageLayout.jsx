@@ -9,7 +9,7 @@ const PageLayout = () => {
   return (
     
     <ThemeProvider theme={secondaryTheme}>
-    <Box sx={{ display: "flex", flexDirection: "column", height:"80vh" }}>
+    <Box sx={{ display: "flex", flexDirection: "column" }}>
       {/* Fixed Header */}
       <Box sx={{ width: "100%" }}>
         <PageHeader />

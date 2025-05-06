@@ -9,7 +9,7 @@ import HistoryIcon from "@mui/icons-material/History";
 import DraftsIcon from "@mui/icons-material/Drafts";
 import AddIcon from "@mui/icons-material/Add";
 import Popover from "@mui/material/Popover";
-import Typography from "@mui/material/Typography";
+import CurrencyExchangeIcon from '@mui/icons-material/CurrencyExchange';
 import Divider from "@mui/material/Divider";
 import { useNavigate } from "react-router-dom";
 
@@ -57,6 +57,11 @@ const SidebarComponent = () => {
       label: "Outward Remittance",
     },
     {
+      icon: <CurrencyExchangeIcon fontSize="large" />,
+      label: "Disposal Instructions",
+      path: "/dashboard/IRM-disposal-grid",
+    },
+    {
       icon: <BarChartIcon fontSize="large" />,
       label: "Beneficiary List",
       path: "/beneficiary-list",
@@ -75,7 +80,7 @@ const SidebarComponent = () => {
   ];
 
   return (
-    <div style={{ height: "90vh", display: "flex", marginTop: "-28px" }}>
+    <div style={{ height: "89vh", display: "flex", marginTop: "-27px" }}>
       <Sidebar
         backgroundColor="#333333"
         width="80px"
@@ -103,7 +108,7 @@ const SidebarComponent = () => {
                 color: selected === index ? "white" : "black",
                 backgroundColor: selected === index ? "black" : "#333333",
                 borderRight: selected === index ? "5px solid red" : "none",
-                padding: "35px 0",
+                padding: "30px 0",
               }}
             >
               <div
@@ -117,7 +122,7 @@ const SidebarComponent = () => {
                   style: {
                     color: "white",
                     fontSize: "30px",
-                    paddingTop: "5px",
+                    paddingTop: "7px",
                   },
                 })}
                 <span
@@ -130,7 +135,7 @@ const SidebarComponent = () => {
                     overflow: "visible",
                     textOverflow: "unset",
                     whiteSpace: "normal",
-                    margin: "8px 0px",
+                    margin: "1px 0px",
                   }}
                 >
                   {item.label}
@@ -141,7 +146,7 @@ const SidebarComponent = () => {
         </Menu>
 
         {/* Popover Component */}
-        <Popover sx={{borderRadius:"20px", boxShadow:"none"}}
+        <Popover sx={{borderRadius:"20px",paperShadow:"none", bgcolor:"none",shadow:"none" }}
           id={id}
           open={open}
           anchorEl={anchorEl}

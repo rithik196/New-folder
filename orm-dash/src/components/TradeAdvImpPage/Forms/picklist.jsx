@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect,useRef } from "react";
 import {
   IconButton,
   Radio,
@@ -25,7 +25,7 @@ import { useDispatch, useSelector } from "react-redux";
 import Grid from "@mui/material/Grid2";
 import { updateTabData } from "../FormSlice"; // adjust the path
 
-const Picklist = ({ fieldKey, tabKey }) => {
+const Picklist = ({ fieldKey, tabKey, variant = "default", value = "" }) => {
   const dispatch = useDispatch();
   const storedValue = useSelector(
     (state) => state.form.formData[tabKey]?.[fieldKey] || ""
@@ -37,11 +37,33 @@ const Picklist = ({ fieldKey, tabKey }) => {
     (state) => state.form.formData[tabKey] || {}
   );
 
+  const syncedInitialValue = useRef(false);
+
+  useEffect(() => {
+    if (
+      variant === "compact" &&
+      value &&
+      !storedValue &&
+      !syncedInitialValue.current
+    ) {
+      dispatch(
+        updateTabData({
+          tabKey,
+          data: {
+            ...currentTabData,
+            [fieldKey]: value,
+          },
+        })
+      );
+      syncedInitialValue.current = true;
+    }
+  }, [variant, value, storedValue, tabKey, fieldKey, currentTabData, dispatch]);
+  
   const handleOpen = () => {
     setTempSelectedRow(storedValue);
     setIsModalOpen(true);
   };
-
+  
   const handleClose = () => setIsModalOpen(false);
 
   const handleAddAndClose = () => {
@@ -67,8 +89,9 @@ const Picklist = ({ fieldKey, tabKey }) => {
         },
       })
     );
-    setTempSelectedRow(null);
+    setTempSelectedRow("");
   };
+  
 
   const rows = [
     {
@@ -88,10 +111,15 @@ const Picklist = ({ fieldKey, tabKey }) => {
   return (
     <>
       <Grid container spacing={0} mt={0}>
-        <Grid size={{ xs: 12, md: 8 }}>
-          <TextField size="small" fullWidth value={storedValue} disabled />
+        <Grid size={{ xs: 12, md: variant === "compact" ? 9.1 : 8.1 }}>
+          <TextField
+            size="medium"
+            sx={{ width: variant === "compact" ? "262px" : "auto" }}
+            value={storedValue}
+            disabled
+          />
         </Grid>
-        <Grid size={{ xs: 12, md: 2 }}>
+        <Grid size={{ xs: 12, md: variant === "compact" ? 1.4 : 1.9 }}>
           <IconButton
             onClick={handleClear}
             sx={{
@@ -102,11 +130,14 @@ const Picklist = ({ fieldKey, tabKey }) => {
             }}
           >
             <CloseIcon
-              sx={{ border: "1px solid #9B1E26", borderRadius: "15px" }}
+              sx={{
+                border: "1px solid #9B1E26",
+                borderRadius: "15px",
+              }}
             />
           </IconButton>
         </Grid>
-        <Grid size={{ xs: 12, md: 2 }}>
+        <Grid size={{ xs: 12, md: variant === "compact" ? 1.5 : 2 }}>
           <IconButton
             onClick={handleOpen}
             sx={{
@@ -120,7 +151,6 @@ const Picklist = ({ fieldKey, tabKey }) => {
           </IconButton>
         </Grid>
       </Grid>
-
       <Dialog open={isModalOpen} onClose={handleClose} maxWidth="md" fullWidth>
         <DialogTitle>
           BIC Details

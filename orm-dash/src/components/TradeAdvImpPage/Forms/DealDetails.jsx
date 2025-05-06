@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+  import React, { useState } from "react";
 import {
   Box,
   Typography,
@@ -30,8 +30,9 @@ import Grid from "@mui/material/Grid2";
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import { useDispatch, useSelector } from "react-redux";
+import { updateTabData } from "../formSlice";
 
-// Mock data for the deals
 const mockDealData = {
   existingDeal: {
     fxCCY: "USD/INR",
@@ -46,100 +47,171 @@ const mockDealData = {
 };
 
 const DealDetails = () => {
-  const [editingIndex, setEditingIndex] = useState(-1);
-  const [openDialog, setOpenDialog] = useState(false);
-  const [records, setRecords] = useState([]);
-  const [selectedRows, setSelectedRows] = useState([]);
-  const [formData, setFormData] = useState({
+  const dispatch = useDispatch();
+  const dealDetails = useSelector(
+    (state) => state.form.formData.dealDetails || {}
+  );
+
+  // Get state from Redux
+  const records = dealDetails.records || [];
+  const selectedRows = dealDetails.selectedRows || [];
+  const formData = dealDetails.formData || {
     fxType: "",
     dealId: "",
     rate: "",
     originalDealAmount: "",
     fetchedData: null,
-  });
+  };
+
+  const { fetchedData, ...restFormData } = formData;
+  const newRecord = {
+    ...restFormData,
+    ...(fetchedData || mockDealData.connectRM),
+    ...(formData.fxType === "connect" && mockDealData.connectRM),
+  };
+
+  const [editingIndex, setEditingIndex] = useState(-1);
+  const [openDialog, setOpenDialog] = useState(false);
+  const updateDealState = (newState) => {
+    dispatch(
+      updateTabData({
+        tabKey: "dealDetails",
+        data: {
+          ...dealDetails,   // ✅ Preserve existing state like records, selectedRows, etc.
+          ...newState,      // ✅ Apply updates
+        },
+      })
+    );
+  };
+  
 
   const handleOpenDialog = (index = -1) => {
     setEditingIndex(index);
     if (index >= 0) {
       const record = records[index];
-      setFormData({
-        fxType: record.fxType === "Existing Deal" ? "existing" : "connect",
-        dealId: record.dealId,
-        rate: record.rate,
-        originalDealAmount: record.originalDealAmount,
-        fetchedData: {
-          fxCCY: record.fxCCY,
-          dealMaturityDate: record.dealMaturityDate,
-          dealUtilizationAmount: record.dealUtilizationAmount,
-          equivalentINR: record.equivalentINR,
+      updateDealState({
+        formData: {
+          fxType: record.fxType || "",
+          dealId: record.dealId || "",
+          rate: record.rate || "",
+          originalDealAmount: record.originalDealAmount || "",
+          fetchedData: {
+            fxCCY: record.fxCCY || "",
+            dealMaturityDate: record.dealMaturityDate || "",
+            dealUtilizationAmount: record.dealUtilizationAmount || "",
+            equivalentINR: record.equivalentINR || "",
+          },
+        },
+      });
+    } else {
+      updateDealState({
+        formData: {
+          fxType: "",
+          dealId: "",
+          rate: "",
+          originalDealAmount: "",
+          fetchedData: null,
         },
       });
     }
     setOpenDialog(true);
   };
+
   const handleCloseDialog = () => {
     setOpenDialog(false);
     setEditingIndex(-1);
-    setFormData({
-      fxType: "",
-      dealId: "",
-      rate: "",
-      originalDealAmount: "",
-      fetchedData: null,
-    });
-  };
-
-  const handleGetDetails = () => {
-    // Simulate API call
-    setFormData((prev) => ({
-      ...prev,
-      fetchedData: mockDealData.existingDeal,
-    }));
-  };
-
-  const handleSave = (action) => {
-    const newRecord = {
-      fxType: formData.fxType,
-      dealId: formData.dealId,
-      rate: formData.rate,
-      originalDealAmount: formData.originalDealAmount,
-      ...(formData.fetchedData || mockDealData.connectRM),
-    };
-
-    if (editingIndex >= 0) {
-      // Update existing record
-      const updatedRecords = [...records];
-      updatedRecords[editingIndex] = newRecord;
-      setRecords(updatedRecords);
-    } else {
-      // Add new record
-      setRecords([...records, newRecord]);
-    }
-
-    if (action === "close") {
-      handleCloseDialog();
-    } else {
-      setFormData({
+    updateDealState({
+      formData: {
         fxType: "",
         dealId: "",
         rate: "",
         originalDealAmount: "",
         fetchedData: null,
-      });
-    }
+      },
+    });
   };
 
+  const handleGetDetails = () => {
+    updateDealState({
+      formData: {
+        ...formData,
+        fetchedData: mockDealData.existingDeal,
+      },
+    });
+  };
+
+  const handleSave = (action) => {
+    const baseRecord = {
+      fxType: formData.fxType,
+      dealId: formData.dealId,
+      rate: formData.rate,
+      originalDealAmount: formData.originalDealAmount,
+    };
+  
+    const newRecord = {
+      ...baseRecord,
+      ...(formData.fxType === "existing" ? mockDealData.existingDeal : mockDealData.connectRM),
+    };
+  
+    const updatedRecords = [...records];
+    if (editingIndex >= 0) {
+      updatedRecords[editingIndex] = newRecord;
+    } else {
+      updatedRecords.push(newRecord);
+    }
+  
+    // Update the state in a single dispatch
+    updateDealState({
+      records: updatedRecords,
+      formData: {
+        fxType: "",
+        dealId: "",
+        rate: "",
+        originalDealAmount: "",
+        fetchedData: null,
+      },
+      selectedRows: action === "close" ? [] : selectedRows,
+    });
+  
+    // Close the dialog if needed
+    if (action === "close") {
+      setOpenDialog(false);
+      setEditingIndex(-1);
+    }
+  };
+  
+
   const handleSelectRow = (index) => {
-    setSelectedRows((prev) =>
-      prev.includes(index) ? prev.filter((i) => i !== index) : [...prev, index]
-    );
+    const newSelected = selectedRows.includes(index)
+      ? selectedRows.filter((i) => i !== index)
+      : [...selectedRows, index];
+
+    updateDealState({ selectedRows: newSelected });
   };
 
   const handleDeleteSelected = () => {
-    setRecords((prev) =>
-      prev.filter((_, index) => !selectedRows.includes(index))
-    );
-    setSelectedRows([]);
+    updateDealState({
+      records: records.filter((_, index) => !selectedRows.includes(index)),
+      selectedRows: [],
+    });
+  };
+
+  const handleFormChange = (field, value) => {
+    updateDealState({
+      formData: { ...formData, [field]: value },
+    });
+  };
+
+  const handleFetchedDataChange = (field, value) => {
+    updateDealState({
+      formData: {
+        ...formData,
+        fetchedData: {
+          ...(formData.fetchedData || {}),
+          [field]: value,
+        },
+      },
+    });
   };
 
   // Calculate total remittance amount
@@ -150,11 +222,9 @@ const DealDetails = () => {
     return total + amount;
   }, 0);
 
-  // Format the number with commas
   const formattedAmount = new Intl.NumberFormat("en-IN").format(
     totalRemittanceAmount
   );
-
   return (
     <Box className="details-container">
       <Accordion defaultExpanded>
@@ -182,7 +252,7 @@ const DealDetails = () => {
                         <Button
                           variant="text"
                           onClick={handleDeleteSelected}
-                          sx={{ mr: 2 }}
+                          sx={{ mr: 2, color: "#9B1E26" }}
                           disabled={selectedRows.length === 0}
                         >
                           <DeleteIcon />
@@ -191,8 +261,7 @@ const DealDetails = () => {
                           variant="text"
                           startIcon={<AddIcon />}
                           onClick={handleOpenDialog}
-                          
-                            sx={{color:"#9B1E26" }}
+                          sx={{ color: "#9B1E26" }}
                         >
                           Add
                         </Button>
@@ -229,6 +298,14 @@ const DealDetails = () => {
                         <Checkbox
                           checked={selectedRows.includes(index)}
                           onChange={() => handleSelectRow(index)}
+                          sx={{
+                            padding: 0,
+                            marginRight: 1,
+                            color: "brown",
+                            "&.Mui-checked": {
+                              color: "brown",
+                            },
+                          }}
                         />
                       </TableCell>
                       <TableCell>
@@ -352,15 +429,14 @@ const DealDetails = () => {
           <Grid container spacing={3} sx={{ mt: 1 }}>
             <Grid size={{ md: 4 }}>
               <FormControl fullWidth>
-                <FormLabel sx={{ alignSelf: "start", mb: 1 }}>
+                <FormLabel sx={{ alignSelf: "start", mb: 1 }} required>
                   Fx Type
                 </FormLabel>
                 <Select
                   displayEmpty
+                  required
                   value={formData.fxType}
-                  onChange={(e) =>
-                    setFormData({ ...formData, fxType: e.target.value })
-                  }
+                  onChange={(e) => handleFormChange("fxType", e.target.value)}
                 >
                   <MenuItem value="" disabled>
                     Select
@@ -382,9 +458,7 @@ const DealDetails = () => {
                   <TextField
                     fullWidth
                     value={formData.dealId}
-                    onChange={(e) =>
-                      setFormData({ ...formData, dealId: e.target.value })
-                    }
+                    onChange={(e) => handleFormChange("dealId", e.target.value)}
                   />
                 </Grid>
                 <Grid size={{ md: 4 }}>
@@ -392,9 +466,7 @@ const DealDetails = () => {
                   <TextField
                     fullWidth
                     value={formData.rate}
-                    onChange={(e) =>
-                      setFormData({ ...formData, rate: e.target.value })
-                    }
+                    onChange={(e) => handleFormChange("rate", e.target.value)}
                   />
                 </Grid>
                 <Grid size={{ md: 4 }}>
@@ -405,10 +477,7 @@ const DealDetails = () => {
                     fullWidth
                     value={formData.originalDealAmount}
                     onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        originalDealAmount: e.target.value,
-                      })
+                      handleFormChange("originalDealAmount", e.target.value)
                     }
                   />
                 </Grid>
@@ -427,7 +496,6 @@ const DealDetails = () => {
                   </Button>
                 </Grid>
 
-                {/* Always visible fields with default values */}
                 <Grid size={{ md: 4 }}>
                   <FormLabel sx={{ alignSelf: "start" }}>Fx CCY</FormLabel>
                   <Box
@@ -549,15 +617,17 @@ const DealDetails = () => {
             {formData.fxType === "existing" && (
               <>
                 <Button
-                  onClick={() => {
-                    setFormData({
-                      ...formData,
-                      dealId: "",
-                      rate: "",
-                      originalDealAmount: "",
-                      fetchedData: null,
-                    });
-                  }}
+                  onClick={() =>
+                    updateDealState({
+                      formData: {
+                        ...formData,
+                        dealId: "",
+                        rate: "",
+                        originalDealAmount: "",
+                        fetchedData: null,
+                      },
+                    })
+                  }
                   variant="outlined"
                   sx={{
                     borderColor: "#9B1E26",
